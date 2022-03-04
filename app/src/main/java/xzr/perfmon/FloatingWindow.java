@@ -25,7 +25,7 @@ import static xzr.perfmon.RefreshingDateThread.adrenoload;
 import static xzr.perfmon.RefreshingDateThread.cpubw;
 import static xzr.perfmon.RefreshingDateThread.cpufreq;
 import static xzr.perfmon.RefreshingDateThread.cpuload;
-import static xzr.perfmon.RefreshingDateThread.cpuonline;
+import static xzr.perfmon.RefreshingDateThread.cpunum;
 import static xzr.perfmon.RefreshingDateThread.current;
 import static xzr.perfmon.RefreshingDateThread.fps;
 import static xzr.perfmon.RefreshingDateThread.gpubw;
@@ -35,17 +35,16 @@ import static xzr.perfmon.RefreshingDateThread.maxtemp;
 import static xzr.perfmon.RefreshingDateThread.memusage;
 import static xzr.perfmon.RefreshingDateThread.mincpubw;
 
+import java.util.ArrayList;
+
 public class FloatingWindow extends Service {
-    static String TAG="FloatingWindow";
-    public static boolean do_exit=true;
+    static String TAG = "FloatingWindow";
+
+    public static boolean do_exit = true;
     static WindowManager.LayoutParams params;
     static WindowManager windowManager;
-    static int statusBarHeight = -1;
-    LinearLayout main;
-    static TextView line[];
-    static int linen;
+    static ArrayList<TextView> textViews;
     static Handler ui_refresher;
-    static float size_multiple_now;
 
     static boolean show_cpufreq_now;
     static boolean show_cpuload_now;
@@ -60,85 +59,54 @@ public class FloatingWindow extends Service {
     static boolean show_gpubw_now;
     static boolean show_llcbw_now;
     static boolean show_fps_now;
-    
+
+    private final float FRONT_SIZE = 0.7f;
+    private LinearLayout main;
+
     @SuppressLint("ClickableViewAccessibility")
-    void init(){
-        size_multiple_now=SharedPreferencesUtil.sharedPreferences.getFloat(SharedPreferencesUtil.size_multiple,SharedPreferencesUtil.size_multiple_default);
+    void init() {
+        textViews = new ArrayList<>();
         {
             show_cpufreq_now = SharedPreferencesUtil.sharedPreferences.getBoolean(SharedPreferencesUtil.show_cpufreq, SharedPreferencesUtil.show_cpufreq_default);
-            if (!show_cpufreq_now&&Support.support_cpufreq)
-                linen=linen-JniTools.getcpunum();
             show_cpuload_now = SharedPreferencesUtil.sharedPreferences.getBoolean(SharedPreferencesUtil.show_cpuload, SharedPreferencesUtil.show_cpuload_default);
-
             show_gpufreq_now = SharedPreferencesUtil.sharedPreferences.getBoolean(SharedPreferencesUtil.show_gpufreq, SharedPreferencesUtil.show_gpufreq_default);
-            if (!show_gpufreq_now&&Support.support_adrenofreq)
-                linen--;
             show_gpuload_now = SharedPreferencesUtil.sharedPreferences.getBoolean(SharedPreferencesUtil.show_gpuload, SharedPreferencesUtil.show_gpuload_default);
-
             show_cpubw_now = SharedPreferencesUtil.sharedPreferences.getBoolean(SharedPreferencesUtil.show_cpubw, SharedPreferencesUtil.show_cpubw_default);
-            if (!show_cpubw_now&&Support.support_cpubw)
-                linen--;
-            
             show_mincpubw_now = SharedPreferencesUtil.sharedPreferences.getBoolean(SharedPreferencesUtil.show_mincpubw, SharedPreferencesUtil.show_mincpubw_default);
-            if (!show_mincpubw_now&& Support.support_mincpubw)
-                linen--;
-
             show_m4m_now = SharedPreferencesUtil.sharedPreferences.getBoolean(SharedPreferencesUtil.show_m4m, SharedPreferencesUtil.show_m4m_default);
-            if (!show_m4m_now&&Support.support_m4m)
-                linen--;
-
             show_thermal_now = SharedPreferencesUtil.sharedPreferences.getBoolean(SharedPreferencesUtil.show_thermal, SharedPreferencesUtil.show_thermal_default);
-            if (!show_thermal_now&&Support.support_temp)
-                linen--;
-
             show_mem_now = SharedPreferencesUtil.sharedPreferences.getBoolean(SharedPreferencesUtil.show_mem, SharedPreferencesUtil.show_mem_default);
-            if (!show_mem_now&&Support.support_mem)
-                linen--;
-
             show_current_now = SharedPreferencesUtil.sharedPreferences.getBoolean(SharedPreferencesUtil.show_current, SharedPreferencesUtil.show_current_default);
-            if (!show_current_now&&Support.support_current)
-                linen--;
-
             show_gpubw_now = SharedPreferencesUtil.sharedPreferences.getBoolean(SharedPreferencesUtil.show_gpubw, SharedPreferencesUtil.show_gpubw_default);
-            if (!show_gpubw_now&&Support.support_gpubw)
-                linen--;
-            
             show_llcbw_now = SharedPreferencesUtil.sharedPreferences.getBoolean(SharedPreferencesUtil.show_llcbw, SharedPreferencesUtil.show_llcbw_default);
-            if (!show_llcbw_now&&Support.support_llcbw)
-                linen--;
-
             show_fps_now = SharedPreferencesUtil.sharedPreferences.getBoolean(SharedPreferencesUtil.show_fps, SharedPreferencesUtil.show_fps_default);
-            if (!show_fps_now&&Support.support_fps)
-                linen--;
         }
-        params=new WindowManager.LayoutParams();
-        windowManager=(WindowManager)getApplication().getSystemService(Context.WINDOW_SERVICE);
-        if(Build.VERSION.SDK_INT>=26){
+        params = new WindowManager.LayoutParams();
+        windowManager = (WindowManager) getApplication().getSystemService(Context.WINDOW_SERVICE);
+        if (Build.VERSION.SDK_INT >= 26) {
             params.type = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY;
-        }
-        else{
+        } else {
             params.type = WindowManager.LayoutParams.TYPE_SYSTEM_ALERT;
         }
 
         params.format = PixelFormat.RGBA_8888;
         params.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
-        params.gravity = Gravity.LEFT | Gravity.TOP;
-        params.x = 0;
-        params.y = 0;
-        if(SharedPreferencesUtil.sharedPreferences.getInt(SharedPreferencesUtil.width,SharedPreferencesUtil.default_width)!=SharedPreferencesUtil.default_width)
-            params.width=SharedPreferencesUtil.sharedPreferences.getInt(SharedPreferencesUtil.width,SharedPreferencesUtil.default_width);
-        else if((Support.support_cpuload&&show_cpuload_now)||(Support.support_adrenofreq&&show_gpuload_now))
-            params.width=(int)((int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 145,getResources().getDisplayMetrics())*size_multiple_now);
+        params.gravity = Gravity.CENTER;
+        params.x = 10;
+        params.y = 10;
+        params.width = ViewGroup.LayoutParams.WRAP_CONTENT;
+        params.height = ViewGroup.LayoutParams.WRAP_CONTENT;
+
+        main = new LinearLayout(this);
+        if (SharedPreferencesUtil.sharedPreferences.getBoolean(SharedPreferencesUtil.horizon_mode, SharedPreferencesUtil.horizon_mode_default))
+            main.setOrientation(LinearLayout.HORIZONTAL);
         else
-            params.width=(int)((int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 120,getResources().getDisplayMetrics())*size_multiple_now);
-        params.height = 300;
-        main= new LinearLayout(this);
-        main.setOrientation(LinearLayout.VERTICAL);
+            main.setOrientation(LinearLayout.VERTICAL);
         main.setBackgroundColor(getResources().getColor(R.color.floating_window_backgrouns));
-        main.setPadding((int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 5,getResources().getDisplayMetrics()),0,0,0);
-        TextView close=new TextView(this);
+        main.setPadding((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 5, getResources().getDisplayMetrics()), 0, 0, 0);
+        TextView close = new TextView(this);
         close.setText(R.string.close);
-        close.setTextSize(TypedValue.COMPLEX_UNIT_PX,close.getTextSize()*size_multiple_now);
+        close.setTextSize(TypedValue.COMPLEX_UNIT_PX, close.getTextSize() * FRONT_SIZE);
         close.setTextColor(getResources().getColor(R.color.white));
         main.addView(close);
         close.setOnClickListener(new View.OnClickListener() {
@@ -150,13 +118,14 @@ public class FloatingWindow extends Service {
         close.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
-                SharedPreferencesUtil.sharedPreferences.edit().putBoolean(SharedPreferencesUtil.skip_first_screen,false).commit();
-                Toast.makeText(FloatingWindow.this,R.string.skip_first_screen_str_disabled, Toast.LENGTH_LONG).show();
+                SharedPreferencesUtil.sharedPreferences.edit().putBoolean(SharedPreferencesUtil.skip_first_screen, false).commit();
+                Toast.makeText(FloatingWindow.this, R.string.skip_first_screen_str_disabled, Toast.LENGTH_LONG).show();
                 return false;
             }
         });
         main.setOnTouchListener(new View.OnTouchListener() {
-            private int x,y;
+            private int x, y;
+
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 switch (event.getAction()) {
@@ -181,100 +150,78 @@ public class FloatingWindow extends Service {
                 return false;
             }
         });
-        windowManager.addView(main,params);
-
-        main.measure(View.MeasureSpec.UNSPECIFIED,View.MeasureSpec.UNSPECIFIED);
-
-        int resourceId = getResources().getIdentifier("status_bar_height","dimen","android");
-        if (resourceId > 0) {
-            statusBarHeight = getResources().getDimensionPixelSize(resourceId);
-        }
+        windowManager.addView(main, params);
     }
 
-    void monitor_init(){
-        LinearLayout.LayoutParams layoutParams=new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-
-        line=new TextView[linen];
-
-        if(SharedPreferencesUtil.sharedPreferences.getInt(SharedPreferencesUtil.height,SharedPreferencesUtil.default_height)!=SharedPreferencesUtil.default_height)
-            params.height=SharedPreferencesUtil.sharedPreferences.getInt(SharedPreferencesUtil.height,SharedPreferencesUtil.default_height);
-        else
-            params.height=(linen+1)*(int)(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 20,getResources().getDisplayMetrics())*size_multiple_now);
-
-        windowManager.updateViewLayout(main,params);
-        ui_refresher=new Handler(new Handler.Callback() {
+    void monitor_init() {
+        windowManager.updateViewLayout(main, params);
+        ui_refresher = new Handler(new Handler.Callback() {
             @Override
             public boolean handleMessage(Message message) {
-                int i=0;
-                if(Support.support_cpufreq&&show_cpufreq_now) {
-                    for (i = 0; i < RefreshingDateThread.cpunum; i++) {
-                        String text = "cpu" + i + " ";
-                        if (cpuonline[i] == 1) {
-                            text = text + cpufreq[i] + " Mhz";
-                            if (Support.support_cpuload&&show_cpuload_now)
-                                text = text + Tools.format_ify_add_blank(cpufreq[i] + "") + cpuload[i] + "%";
-                        } else {
-                            text = text +getResources().getString(R.string.offline);
-                        }
-                        line[i].setText(text);
+                int i = 0;
+                if (Support.support_cpufreq && show_cpufreq_now) {
+                    int total_freq = 0, total_load = 0;
+                    for (int j = 0; j < RefreshingDateThread.cpunum; j++) {
+                        total_freq += cpufreq[j];
+                        total_load += cpuload[j];
                     }
+                    String text = "cpu   " + Tools.format_ify_add_blank(total_freq / cpunum + "") + " Mhz  ";
+                    if (Support.support_cpuload && show_cpuload_now) {
+                        text += total_load / cpunum + "%";
+                    }
+                    addToMainView(windowManager, main, textViews, ++i, text);
                 }
-                if(Support.support_adrenofreq&&show_gpufreq_now) {
-                    if(show_gpuload_now)
-                        line[i].setText("gpu0 " + adrenofreq + " Mhz"+Tools.format_ify_add_blank(adrenofreq+"") + adrenoload + "%");
-                    else
-                        line[i].setText("gpu0 " + adrenofreq + " Mhz"+Tools.format_ify_add_blank(adrenofreq+""));
-                    i++;
+                if (Support.support_adrenofreq && show_gpufreq_now) {
+                    String text = "gpu0 " + Tools.format_ify_add_blank(adrenofreq + "") + " Mhz  ";
+                    if (show_gpuload_now)
+                        text += adrenoload + "%";
+                    addToMainView(windowManager, main, textViews, ++i, text);
                 }
-                if (Support.support_mincpubw&&show_mincpubw_now) {
-                    line[i].setText("mincpubw " + mincpubw);
-                    i++;
+                if (Support.support_mincpubw && show_mincpubw_now) {
+                    addToMainView(windowManager, main, textViews, ++i, "mincpubw " + mincpubw);
                 }
-                if (Support.support_cpubw&&show_cpubw_now) {
-                    line[i].setText("cpubw " + cpubw);
-                    i++;
+                if (Support.support_cpubw && show_cpubw_now) {
+                    addToMainView(windowManager, main, textViews, ++i, "cpubw " + cpubw);
                 }
-                if (Support.support_gpubw&&show_gpubw_now) {
-                    line[i].setText("gpubw " + gpubw);
-                    i++;
+                if (Support.support_gpubw && show_gpubw_now) {
+                    addToMainView(windowManager, main, textViews, ++i, "gpubw " + gpubw);
                 }
-                if (Support.support_llcbw&&show_llcbw_now) {
-                    line[i].setText("llccbw " + llcbw);
-                    i++;
+                if (Support.support_llcbw && show_llcbw_now) {
+                    addToMainView(windowManager, main, textViews, ++i, "llccbw " + llcbw);
                 }
-                if (Support.support_m4m&show_m4m_now) {
-                    line[i].setText("m4m " + m4m+" Mhz");
-                    i++;
+                if (Support.support_m4m & show_m4m_now) {
+                    addToMainView(windowManager, main, textViews, ++i, "m4m " + m4m + " Mhz");
                 }
-                if (Support.support_temp&&show_thermal_now) {
-                    line[i].setText(getResources().getString(R.string.temp) + maxtemp+" ℃");
-                    i++;
+                if (Support.support_temp && show_thermal_now) {
+                    addToMainView(windowManager, main, textViews, ++i, getResources().getString(R.string.temp) + maxtemp + " ℃");
                 }
-                if (Support.support_mem&&show_mem_now) {
-                    line[i].setText(getResources().getString(R.string.mem) + memusage+"%");
-                    i++;
+                if (Support.support_mem && show_mem_now) {
+                    addToMainView(windowManager, main, textViews, ++i, getResources().getString(R.string.mem) + memusage + "%");
                 }
-                if (Support.support_current&&show_current_now) {
-                    line[i].setText(getResources().getString(R.string.current)+ current+" mA");
-                    i++;
+                if (Support.support_current && show_current_now) {
+                    addToMainView(windowManager, main, textViews, ++i, getResources().getString(R.string.current) + current + " mA");
                 }
-                if (Support.support_fps&&show_fps_now) {
-                    line[i].setText("fps " + fps);
-                    i++;
+                if (Support.support_fps && show_fps_now) {
+                    addToMainView(windowManager, main, textViews, ++i, "fps " + fps);
                 }
                 return false;
             }
         });
-
-        for (int i=0;i<linen;i++){
-            line[i]=new TextView(this);
-            line[i].setTextColor(getResources().getColor(R.color.white));
-            line[i].setLayoutParams(layoutParams);
-            line[i].setTextSize(TypedValue.COMPLEX_UNIT_PX,line[i].getTextSize()*size_multiple_now);
-            main.addView(line[i]);
-        }
-        windowManager.updateViewLayout(main,params);
         new RefreshingDateThread().start();
+    }
+
+    private void addToMainView(WindowManager windowManager, LinearLayout main, ArrayList<TextView> textViews, int i, String message) {
+        if (textViews.size() < i) {
+            textViews.add(new TextView(FloatingWindow.this));
+            TextView t = textViews.get(textViews.size() - 1);
+            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            t.setTextColor(getResources().getColor(R.color.white));
+            t.setLayoutParams(layoutParams);
+            t.setTextSize(TypedValue.COMPLEX_UNIT_PX, t.getTextSize() * FRONT_SIZE);
+            main.addView(t);
+            windowManager.updateViewLayout(main, params);
+        }
+        textViews.get(i - 1).setText(message);
     }
 
     @Override
@@ -286,7 +233,7 @@ public class FloatingWindow extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        do_exit=false;
+        do_exit = false;
         init();
         monitor_init();
     }
@@ -298,11 +245,12 @@ public class FloatingWindow extends Service {
 
     @Override
     public void onDestroy() {
-        Log.d(TAG,"Calling destory service");
-        do_exit=true;
-        try{
-        windowManager.removeView(main);}
-        catch (Exception e){}
+        Log.d(TAG, "Calling destroy service");
+        do_exit = true;
+        try {
+            windowManager.removeView(main);
+        } catch (Exception ignored) {
+        }
         super.onDestroy();
     }
 }
