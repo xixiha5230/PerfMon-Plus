@@ -13,7 +13,7 @@ extern "C" {
  * Signature: (I)I
  */
 JNIEXPORT jint JNICALL Java_xzr_perfmon_JniTools_getcpufreq
-  (JNIEnv *, jclass, jint);
+        (JNIEnv *, jclass, jint);
 
 /*
  * Class:     xzr_perfmon_JniTools
@@ -21,7 +21,7 @@ JNIEXPORT jint JNICALL Java_xzr_perfmon_JniTools_getcpufreq
  * Signature: ()I
  */
 JNIEXPORT jint JNICALL Java_xzr_perfmon_JniTools_getadrenofreq
-  (JNIEnv *, jclass);
+        (JNIEnv *, jclass);
 
 /*
  * Class:     xzr_perfmon_JniTools
@@ -29,7 +29,7 @@ JNIEXPORT jint JNICALL Java_xzr_perfmon_JniTools_getadrenofreq
  * Signature: ()I
  */
 JNIEXPORT jint JNICALL Java_xzr_perfmon_JniTools_getadrenoload
-  (JNIEnv *, jclass);
+        (JNIEnv *, jclass);
 
 /*
  * Class:     xzr_perfmon_JniTools
@@ -37,7 +37,7 @@ JNIEXPORT jint JNICALL Java_xzr_perfmon_JniTools_getadrenoload
  * Signature: ()I
  */
 JNIEXPORT jint JNICALL Java_xzr_perfmon_JniTools_getmincpubw
-  (JNIEnv *, jclass);
+        (JNIEnv *, jclass);
 
 /*
  * Class:     xzr_perfmon_JniTools
@@ -45,7 +45,7 @@ JNIEXPORT jint JNICALL Java_xzr_perfmon_JniTools_getmincpubw
  * Signature: ()I
  */
 JNIEXPORT jint JNICALL Java_xzr_perfmon_JniTools_getcpubw
-  (JNIEnv *, jclass);
+        (JNIEnv *, jclass);
 
 /*
  * Class:     xzr_perfmon_JniTools
@@ -53,7 +53,7 @@ JNIEXPORT jint JNICALL Java_xzr_perfmon_JniTools_getcpubw
  * Signature: ()I
  */
 JNIEXPORT jint JNICALL Java_xzr_perfmon_JniTools_getllcbw
-  (JNIEnv *, jclass);
+        (JNIEnv *, jclass);
 
 /*
  * Class:     xzr_perfmon_JniTools
@@ -61,7 +61,7 @@ JNIEXPORT jint JNICALL Java_xzr_perfmon_JniTools_getllcbw
  * Signature: ()I
  */
 JNIEXPORT jint JNICALL Java_xzr_perfmon_JniTools_getgpubw
-  (JNIEnv *, jclass);
+        (JNIEnv *, jclass);
 
 /*
  * Class:     xzr_perfmon_JniTools
@@ -69,7 +69,7 @@ JNIEXPORT jint JNICALL Java_xzr_perfmon_JniTools_getgpubw
  * Signature: ()I
  */
 JNIEXPORT jint JNICALL Java_xzr_perfmon_JniTools_getm4m
-  (JNIEnv *, jclass);
+        (JNIEnv *, jclass);
 
 /*
  * Class:     xzr_perfmon_JniTools
@@ -77,7 +77,7 @@ JNIEXPORT jint JNICALL Java_xzr_perfmon_JniTools_getm4m
  * Signature: (I)I
  */
 JNIEXPORT jint JNICALL Java_xzr_perfmon_JniTools_getcpuload
-  (JNIEnv *, jclass, jint);
+        (JNIEnv *, jclass, jint);
 
 /*
  * Class:     xzr_perfmon_JniTools
@@ -85,7 +85,7 @@ JNIEXPORT jint JNICALL Java_xzr_perfmon_JniTools_getcpuload
  * Signature: ()Z
  */
 JNIEXPORT jboolean JNICALL Java_xzr_perfmon_JniTools_checkcpuload
-  (JNIEnv *, jclass);
+        (JNIEnv *, jclass);
 
 /*
  * Class:     xzr_perfmon_JniTools
@@ -93,7 +93,7 @@ JNIEXPORT jboolean JNICALL Java_xzr_perfmon_JniTools_checkcpuload
  * Signature: (I)I
  */
 JNIEXPORT jint JNICALL Java_xzr_perfmon_JniTools_getcpuonlinestatus
-  (JNIEnv *, jclass, jint);
+        (JNIEnv *, jclass, jint);
 
 /*
  * Class:     xzr_perfmon_JniTools
@@ -101,7 +101,7 @@ JNIEXPORT jint JNICALL Java_xzr_perfmon_JniTools_getcpuonlinestatus
  * Signature: ()I
  */
 JNIEXPORT jint JNICALL Java_xzr_perfmon_JniTools_getmaxtemp
-  (JNIEnv *, jclass);
+        (JNIEnv *, jclass);
 
 /*
  * Class:     xzr_perfmon_JniTools
@@ -109,7 +109,7 @@ JNIEXPORT jint JNICALL Java_xzr_perfmon_JniTools_getmaxtemp
  * Signature: ()I
  */
 JNIEXPORT jint JNICALL Java_xzr_perfmon_JniTools_getmemusage
-  (JNIEnv *, jclass);
+        (JNIEnv *, jclass);
 
 /*
  * Class:     xzr_perfmon_JniTools
@@ -117,7 +117,7 @@ JNIEXPORT jint JNICALL Java_xzr_perfmon_JniTools_getmemusage
  * Signature: ()I
  */
 JNIEXPORT jint JNICALL Java_xzr_perfmon_JniTools_getcurrent
-  (JNIEnv *, jclass);
+        (JNIEnv *, jclass);
 
 /*
  * Class:     xzr_perfmon_JniTools
@@ -125,7 +125,7 @@ JNIEXPORT jint JNICALL Java_xzr_perfmon_JniTools_getcurrent
  * Signature: ()I
  */
 JNIEXPORT jint JNICALL Java_xzr_perfmon_JniTools_getcpunum
-  (JNIEnv *, jclass);
+        (JNIEnv *, jclass);
 
 /*
  * Class:     xzr_perfmon_JniTools
@@ -133,7 +133,7 @@ JNIEXPORT jint JNICALL Java_xzr_perfmon_JniTools_getcpunum
  * Signature: ()Ljava/lang/String;
  */
 JNIEXPORT jstring JNICALL Java_xzr_perfmon_JniTools_getfps
-  (JNIEnv *, jclass);
+        (JNIEnv *, jclass);
 
 #ifdef __cplusplus
 }
