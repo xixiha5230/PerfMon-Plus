@@ -20,6 +20,12 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.flexbox.FlexDirection;
+import com.google.android.flexbox.FlexWrap;
+import com.google.android.flexbox.FlexboxLayout;
+
+import java.util.ArrayList;
+
 import static xzr.perfmon.RefreshingDateThread.adrenofreq;
 import static xzr.perfmon.RefreshingDateThread.adrenoload;
 import static xzr.perfmon.RefreshingDateThread.cpubw;
@@ -34,8 +40,6 @@ import static xzr.perfmon.RefreshingDateThread.m4m;
 import static xzr.perfmon.RefreshingDateThread.maxtemp;
 import static xzr.perfmon.RefreshingDateThread.memusage;
 import static xzr.perfmon.RefreshingDateThread.mincpubw;
-
-import java.util.ArrayList;
 
 public class FloatingWindow extends Service {
     static String TAG = "FloatingWindow";
@@ -60,8 +64,8 @@ public class FloatingWindow extends Service {
     static boolean show_llcbw_now;
     static boolean show_fps_now;
 
-    private float front_size;
-    private LinearLayout main;
+    static float front_size;
+    private FlexboxLayout main;
 
     @SuppressLint("ClickableViewAccessibility")
     void init() {
@@ -98,11 +102,13 @@ public class FloatingWindow extends Service {
         params.width = ViewGroup.LayoutParams.WRAP_CONTENT;
         params.height = ViewGroup.LayoutParams.WRAP_CONTENT;
 
-        main = new LinearLayout(this);
-        if (SharedPreferencesUtil.sharedPreferences.getBoolean(SharedPreferencesUtil.horizon_mode, SharedPreferencesUtil.horizon_mode_default))
-            main.setOrientation(LinearLayout.HORIZONTAL);
-        else
-            main.setOrientation(LinearLayout.VERTICAL);
+        main = new FlexboxLayout(this);
+        if (SharedPreferencesUtil.sharedPreferences.getBoolean(SharedPreferencesUtil.horizon_mode, SharedPreferencesUtil.horizon_mode_default)) {
+            main.setFlexDirection(FlexDirection.ROW);
+            main.setFlexWrap(FlexWrap.WRAP);
+        } else {
+            main.setFlexDirection(FlexDirection.COLUMN);
+        }
         main.setBackgroundColor(getResources().getColor(R.color.floating_window_backgrouns));
         main.setPadding((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 5, getResources().getDisplayMetrics()), 0, 0, 0);
         TextView close = new TextView(this);
@@ -119,7 +125,7 @@ public class FloatingWindow extends Service {
         close.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
-                SharedPreferencesUtil.sharedPreferences.edit().putBoolean(SharedPreferencesUtil.skip_first_screen, false).commit();
+                SharedPreferencesUtil.sharedPreferences.edit().putBoolean(SharedPreferencesUtil.skip_first_screen, false).apply();
                 Toast.makeText(FloatingWindow.this, R.string.skip_first_screen_str_disabled, Toast.LENGTH_LONG).show();
                 return false;
             }
@@ -211,7 +217,7 @@ public class FloatingWindow extends Service {
         new RefreshingDateThread().start();
     }
 
-    private void addToMainView(WindowManager windowManager, LinearLayout main, ArrayList<TextView> textViews, int i, String message) {
+    private void addToMainView(WindowManager windowManager, FlexboxLayout main, ArrayList<TextView> textViews, int i, String message) {
         if (textViews.size() < i) {
             textViews.add(new TextView(FloatingWindow.this));
             TextView t = textViews.get(textViews.size() - 1);
