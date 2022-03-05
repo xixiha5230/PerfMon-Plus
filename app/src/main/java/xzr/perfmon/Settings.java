@@ -123,42 +123,6 @@ class Settings {
             });
         }
         {
-            LinearLayout line = new LinearLayout(context);
-            linearLayout.addView(line);
-
-            TextView textView = new TextView(context);
-            line.addView(textView);
-            textView.setText(R.string.size_multiple);
-
-            EditText editText = new EditText(context);
-            line.addView(editText);
-            editText.setHint(R.string.default_value);
-            editText.setText(SharedPreferencesUtil.sharedPreferences.getFloat(SharedPreferencesUtil.size_multiple, SharedPreferencesUtil.size_multiple_default) + "");
-            editText.setWidth(500);
-            editText.addTextChangedListener(new TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-                }
-
-                @Override
-                public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-                }
-
-                @Override
-                public void afterTextChanged(Editable editable) {
-                    try {
-                        SharedPreferencesUtil.sharedPreferences.edit().putFloat(SharedPreferencesUtil.size_multiple, Float.parseFloat(editable.toString())).apply();
-                    } catch (Exception e) {
-                        SharedPreferencesUtil.sharedPreferences.edit().remove(SharedPreferencesUtil.size_multiple).apply();
-                    }
-                }
-            });
-
-
-        }
-        {
             TextView textView = new TextView(context);
             textView.setText(R.string.moni_ctl);
             linearLayout.addView(textView);
@@ -386,7 +350,7 @@ class Settings {
             {
                 final Switch sw = new Switch(context);
                 linearLayout.addView(sw);
-                sw.setText(R.string.hotizon_mode);
+                sw.setText(R.string.horizon_mode);
                 if (SharedPreferencesUtil.sharedPreferences.getBoolean(SharedPreferencesUtil.horizon_mode, SharedPreferencesUtil.horizon_mode_default))
                     sw.setChecked(true);
                 sw.setOnClickListener(new View.OnClickListener() {
@@ -407,13 +371,12 @@ class Settings {
 
             TextView textView = new TextView(context);
             line.addView(textView);
-            textView.setText(R.string.window_width);
+            textView.setText(R.string.front_size);
             EditText editText = new EditText(context);
             line.addView(editText);
             editText.setHint(R.string.default_value);
-            int width = SharedPreferencesUtil.sharedPreferences.getInt(SharedPreferencesUtil.width, SharedPreferencesUtil.default_width);
-            if (width != -1)
-                editText.setText(width + "");
+            float front_size = SharedPreferencesUtil.sharedPreferences.getFloat(SharedPreferencesUtil.front_size, SharedPreferencesUtil.front_size_default);
+            editText.setText(String.valueOf(front_size));
             editText.setWidth(500);
             editText.setInputType(InputType.TYPE_CLASS_NUMBER);
             editText.addTextChangedListener(new TextWatcher() {
@@ -430,9 +393,9 @@ class Settings {
                 @Override
                 public void afterTextChanged(Editable editable) {
                     try {
-                        SharedPreferencesUtil.sharedPreferences.edit().putInt(SharedPreferencesUtil.width, Integer.parseInt(editable.toString())).apply();
+                        SharedPreferencesUtil.sharedPreferences.edit().putFloat(SharedPreferencesUtil.front_size, Float.parseFloat(editable.toString())).apply();
                     } catch (Exception e) {
-                        SharedPreferencesUtil.sharedPreferences.edit().remove(SharedPreferencesUtil.width).apply();
+                        SharedPreferencesUtil.sharedPreferences.edit().remove(SharedPreferencesUtil.front_size).apply();
                     }
 
                 }
@@ -441,43 +404,6 @@ class Settings {
 
         }
 
-        {
-            LinearLayout line = new LinearLayout(context);
-            linearLayout.addView(line);
-
-            TextView textView = new TextView(context);
-            line.addView(textView);
-            textView.setText(R.string.window_height);
-
-            EditText editText = new EditText(context);
-            line.addView(editText);
-            editText.setHint(R.string.default_value);
-            int height = SharedPreferencesUtil.sharedPreferences.getInt(SharedPreferencesUtil.height, SharedPreferencesUtil.default_height);
-            if (height != -1)
-                editText.setText(height + "");
-            editText.setWidth(500);
-            editText.setInputType(InputType.TYPE_CLASS_NUMBER);
-            editText.addTextChangedListener(new TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-                }
-
-                @Override
-                public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-                }
-
-                @Override
-                public void afterTextChanged(Editable editable) {
-                    try {
-                        SharedPreferencesUtil.sharedPreferences.edit().putInt(SharedPreferencesUtil.height, Integer.parseInt(editable.toString())).apply();
-                    } catch (Exception e) {
-                        SharedPreferencesUtil.sharedPreferences.edit().remove(SharedPreferencesUtil.height).apply();
-                    }
-                }
-            });
-        }
         return scrollView;
     }
 }

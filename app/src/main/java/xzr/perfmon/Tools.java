@@ -5,8 +5,8 @@ import android.content.Context;
 class Tools {
     static String format_ify_add_blank(String in) {
         StringBuilder s = new StringBuilder(in);
-        for (int i = 0; i < 5 - in.length(); i++) {
-            s.insert(0, "  ");
+        for (int i = 0; i < 4 - in.length(); i++) {
+            s.insert(0, "0");
         }
         return s.toString();
     }

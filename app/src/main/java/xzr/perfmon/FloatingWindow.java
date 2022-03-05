@@ -60,12 +60,13 @@ public class FloatingWindow extends Service {
     static boolean show_llcbw_now;
     static boolean show_fps_now;
 
-    private final float FRONT_SIZE = 0.7f;
+    private float front_size;
     private LinearLayout main;
 
     @SuppressLint("ClickableViewAccessibility")
     void init() {
         textViews = new ArrayList<>();
+        front_size = SharedPreferencesUtil.sharedPreferences.getFloat(SharedPreferencesUtil.front_size, SharedPreferencesUtil.front_size_default);
         {
             show_cpufreq_now = SharedPreferencesUtil.sharedPreferences.getBoolean(SharedPreferencesUtil.show_cpufreq, SharedPreferencesUtil.show_cpufreq_default);
             show_cpuload_now = SharedPreferencesUtil.sharedPreferences.getBoolean(SharedPreferencesUtil.show_cpuload, SharedPreferencesUtil.show_cpuload_default);
@@ -106,7 +107,7 @@ public class FloatingWindow extends Service {
         main.setPadding((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 5, getResources().getDisplayMetrics()), 0, 0, 0);
         TextView close = new TextView(this);
         close.setText(R.string.close);
-        close.setTextSize(TypedValue.COMPLEX_UNIT_PX, close.getTextSize() * FRONT_SIZE);
+        close.setTextSize(TypedValue.COMPLEX_UNIT_PX, close.getTextSize() * front_size);
         close.setTextColor(getResources().getColor(R.color.white));
         main.addView(close);
         close.setOnClickListener(new View.OnClickListener() {
@@ -165,7 +166,7 @@ public class FloatingWindow extends Service {
                         total_freq += cpufreq[j];
                         total_load += cpuload[j];
                     }
-                    String text = "cpu   " + Tools.format_ify_add_blank(total_freq / cpunum + "") + " Mhz  ";
+                    String text = "cpu " + Tools.format_ify_add_blank(total_freq / cpunum + "") + " Mhz  ";
                     if (Support.support_cpuload && show_cpuload_now) {
                         text += total_load / cpunum + "%";
                     }
@@ -214,10 +215,12 @@ public class FloatingWindow extends Service {
         if (textViews.size() < i) {
             textViews.add(new TextView(FloatingWindow.this));
             TextView t = textViews.get(textViews.size() - 1);
-            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            layoutParams.leftMargin = 10;
+            layoutParams.rightMargin = 10;
             t.setTextColor(getResources().getColor(R.color.white));
             t.setLayoutParams(layoutParams);
-            t.setTextSize(TypedValue.COMPLEX_UNIT_PX, t.getTextSize() * FRONT_SIZE);
+            t.setTextSize(TypedValue.COMPLEX_UNIT_PX, t.getTextSize() * front_size);
             main.addView(t);
             windowManager.updateViewLayout(main, params);
         }
