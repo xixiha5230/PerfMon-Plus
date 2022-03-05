@@ -378,7 +378,7 @@ class Settings {
             float front_size = SharedPreferencesUtil.sharedPreferences.getFloat(SharedPreferencesUtil.front_size, SharedPreferencesUtil.front_size_default);
             editText.setText(String.valueOf(front_size));
             editText.setWidth(500);
-            editText.setInputType(InputType.TYPE_CLASS_NUMBER);
+            editText.setInputType(InputType.TYPE_NUMBER_FLAG_DECIMAL);
             editText.addTextChangedListener(new TextWatcher() {
                 @Override
                 public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
