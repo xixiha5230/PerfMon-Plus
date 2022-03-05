@@ -57,7 +57,7 @@ public class SharedPreferencesUtil {
     static final String horizon_mode = "horizon_mode";
     static final boolean horizon_mode_default = true;
 
-    static final String flod_cpu = "horizon_mode";
+    static final String flod_cpu = "flod_cpu";
     static final boolean flod_cpu_default = true;
 
     static final String front_size = "front_size";
