@@ -176,25 +176,25 @@ public class FloatingWindow extends Service {
                             total_freq += cpufreq[j];
                             total_load += cpuload[j];
                         }
-                        String text = String.format(Locale.getDefault(), "cpu %4d M", total_freq / cpunum);
+                        String text = String.format(Locale.getDefault(), "cpu %4dM", total_freq / cpunum);
                         if (Support.support_cpuload && show_cpuload_now) {
                             text = String.format(Locale.getDefault(), text + " %2d%%", total_load / cpunum);
                         }
                         addToMainView(windowManager, main, textViews, ++i, text);
                     } else {
                         for (int j = 0; j < RefreshingDateThread.cpunum; j++) {
-                            String text = String.format(Locale.getDefault(), "cpu%d %dM", j, cpufreq[j]);
+                            String text = String.format(Locale.getDefault(), "cpu%d %4dM", j, cpufreq[j]);
                             if (Support.support_cpuload && show_cpuload_now) {
-                                text = String.format(Locale.getDefault(), text + " %d%%", cpuload[j]);
+                                text = String.format(Locale.getDefault(), text + " %2d%%", cpuload[j]);
                             }
                             addToMainView(windowManager, main, textViews, ++i, text);
                         }
                     }
                 }
                 if (Support.support_adrenofreq && show_gpufreq_now) {
-                    String text = String.format(Locale.getDefault(), "gpu0 %dM", adrenofreq);
+                    String text = String.format(Locale.getDefault(), "gpu0 %4dM", adrenofreq);
                     if (show_gpuload_now)
-                        text = String.format(Locale.getDefault(), text + " %d%%", adrenoload);
+                        text = String.format(Locale.getDefault(), text + " %2d%%", adrenoload);
                     addToMainView(windowManager, main, textViews, ++i, text);
                 }
                 if (Support.support_mincpubw && show_mincpubw_now) {
