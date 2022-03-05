@@ -59,5 +59,6 @@
     <string name="cancel">取消</string>
     <string name="skip_first_screen_str_disabled">跳过兼容性检测页面已禁用</string>
     <string name="enforce_done">SELinux已启用！请重启本应用</string>
+    <string name="flod_cpu">折叠CPU</string>
 
 </resources>

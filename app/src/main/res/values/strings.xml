@@ -59,4 +59,5 @@
     <string name="cancel">cancel</string>
     <string name="skip_first_screen_str_disabled">Skipping the checking screen is disabled</string>
     <string name="enforce_done">SELinux is now enforcing, please re-open the app.</string>
+    <string name="flod_cpu">Flod CPU</string>
 </resources>

@@ -63,14 +63,16 @@ public class FloatingWindow extends Service {
     static boolean show_gpubw_now;
     static boolean show_llcbw_now;
     static boolean show_fps_now;
-
+    static boolean flod_cpu;
     static float front_size;
+
     private FlexboxLayout main;
 
     @SuppressLint("ClickableViewAccessibility")
     void init() {
         textViews = new ArrayList<>();
         front_size = SharedPreferencesUtil.sharedPreferences.getFloat(SharedPreferencesUtil.front_size, SharedPreferencesUtil.front_size_default);
+        flod_cpu = SharedPreferencesUtil.sharedPreferences.getBoolean(SharedPreferencesUtil.flod_cpu, SharedPreferencesUtil.flod_cpu_default);
         {
             show_cpufreq_now = SharedPreferencesUtil.sharedPreferences.getBoolean(SharedPreferencesUtil.show_cpufreq, SharedPreferencesUtil.show_cpufreq_default);
             show_cpuload_now = SharedPreferencesUtil.sharedPreferences.getBoolean(SharedPreferencesUtil.show_cpuload, SharedPreferencesUtil.show_cpuload_default);
@@ -167,16 +169,26 @@ public class FloatingWindow extends Service {
             public boolean handleMessage(Message message) {
                 int i = 0;
                 if (Support.support_cpufreq && show_cpufreq_now) {
-                    int total_freq = 0, total_load = 0;
-                    for (int j = 0; j < RefreshingDateThread.cpunum; j++) {
-                        total_freq += cpufreq[j];
-                        total_load += cpuload[j];
+                    if (flod_cpu) {
+                        int total_freq = 0, total_load = 0;
+                        for (int j = 0; j < RefreshingDateThread.cpunum; j++) {
+                            total_freq += cpufreq[j];
+                            total_load += cpuload[j];
+                        }
+                        String text = "cpu " + Tools.format_ify_add_blank(total_freq / cpunum + "") + "Mhz";
+                        if (Support.support_cpuload && show_cpuload_now) {
+                            text += total_load / cpunum + "%";
+                        }
+                        addToMainView(windowManager, main, textViews, ++i, text);
+                    } else {
+                        for (int j = 0; j < RefreshingDateThread.cpunum; j++) {
+                            String text = "cpu" + j + " " + Tools.format_ify_add_blank(cpufreq[j] + "") + "Mhz";
+                            if (Support.support_cpuload && show_cpuload_now) {
+                                text += cpuload[j] + "%";
+                            }
+                            addToMainView(windowManager, main, textViews, ++i, text);
+                        }
                     }
-                    String text = "cpu " + Tools.format_ify_add_blank(total_freq / cpunum + "") + " Mhz  ";
-                    if (Support.support_cpuload && show_cpuload_now) {
-                        text += total_load / cpunum + "%";
-                    }
-                    addToMainView(windowManager, main, textViews, ++i, text);
                 }
                 if (Support.support_adrenofreq && show_gpufreq_now) {
                     String text = "gpu0 " + Tools.format_ify_add_blank(adrenofreq + "") + " Mhz  ";

@@ -364,6 +364,23 @@ class Settings {
                     }
                 });
             }
+            {
+                final Switch sw = new Switch(context);
+                linearLayout.addView(sw);
+                sw.setText(R.string.flod_cpu);
+                if (SharedPreferencesUtil.sharedPreferences.getBoolean(SharedPreferencesUtil.flod_cpu, SharedPreferencesUtil.flod_cpu_default))
+                    sw.setChecked(true);
+                sw.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (sw.isChecked()) {
+                            SharedPreferencesUtil.sharedPreferences.edit().putBoolean(SharedPreferencesUtil.flod_cpu, true).apply();
+                        } else {
+                            SharedPreferencesUtil.sharedPreferences.edit().putBoolean(SharedPreferencesUtil.flod_cpu, false).apply();
+                        }
+                    }
+                });
+            }
         }
         {
             LinearLayout line = new LinearLayout(context);
