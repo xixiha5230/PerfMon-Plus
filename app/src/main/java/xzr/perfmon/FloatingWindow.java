@@ -25,6 +25,7 @@ import com.google.android.flexbox.FlexWrap;
 import com.google.android.flexbox.FlexboxLayout;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
 import static xzr.perfmon.RefreshingDateThread.adrenofreq;
 import static xzr.perfmon.RefreshingDateThread.adrenoload;
@@ -175,25 +176,25 @@ public class FloatingWindow extends Service {
                             total_freq += cpufreq[j];
                             total_load += cpuload[j];
                         }
-                        String text = "cpu " + Tools.format_ify_add_blank(total_freq / cpunum + "") + "Mhz";
+                        String text = String.format(Locale.getDefault(), "cpu %4d M", total_freq / cpunum);
                         if (Support.support_cpuload && show_cpuload_now) {
-                            text += total_load / cpunum + "%";
+                            text = String.format(Locale.getDefault(), text + " %2d%%", total_load / cpunum);
                         }
                         addToMainView(windowManager, main, textViews, ++i, text);
                     } else {
                         for (int j = 0; j < RefreshingDateThread.cpunum; j++) {
-                            String text = "cpu" + j + " " + Tools.format_ify_add_blank(cpufreq[j] + "") + "Mhz";
+                            String text = String.format(Locale.getDefault(), "cpu%d %dM", j, cpufreq[j]);
                             if (Support.support_cpuload && show_cpuload_now) {
-                                text += cpuload[j] + "%";
+                                text = String.format(Locale.getDefault(), text + " %d%%", cpuload[j]);
                             }
                             addToMainView(windowManager, main, textViews, ++i, text);
                         }
                     }
                 }
                 if (Support.support_adrenofreq && show_gpufreq_now) {
-                    String text = "gpu0 " + Tools.format_ify_add_blank(adrenofreq + "") + " Mhz  ";
+                    String text = String.format(Locale.getDefault(), "gpu0 %dM", adrenofreq);
                     if (show_gpuload_now)
-                        text += adrenoload + "%";
+                        text = String.format(Locale.getDefault(), text + " %d%%", adrenoload);
                     addToMainView(windowManager, main, textViews, ++i, text);
                 }
                 if (Support.support_mincpubw && show_mincpubw_now) {
@@ -229,8 +230,8 @@ public class FloatingWindow extends Service {
         new RefreshingDateThread().start();
     }
 
-    private void addToMainView(WindowManager windowManager, FlexboxLayout main, ArrayList<TextView> textViews, int i, String message) {
-        if (textViews.size() < i) {
+    private void addToMainView(WindowManager windowManager, FlexboxLayout main, ArrayList<TextView> textViews, int index, String text) {
+        if (textViews.size() < index) {
             textViews.add(new TextView(FloatingWindow.this));
             TextView t = textViews.get(textViews.size() - 1);
             LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -242,7 +243,7 @@ public class FloatingWindow extends Service {
             main.addView(t);
             windowManager.updateViewLayout(main, params);
         }
-        textViews.get(i - 1).setText(message);
+        textViews.get(index - 1).setText(text);
     }
 
     @Override
